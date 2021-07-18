@@ -65,7 +65,7 @@ vac_by_prop <- tail(dd2,1)[rep(1,301),]
 
 rownames(vac_by_prop) <- NULL
 
-for(i in 1:300){
+for(i in 1:100){
 vac_by_prop[i+1,"date"] <- vac_by_prop[i,"date"] + 1
 vac_by_prop[i+1,"cum_first_dose"] <- round((1 - vac_by_prop[i,"cum_first_dose"]/on_pop)*avg_vac) + vac_by_prop[i,"cum_first_dose"]
 vac_by_prop[i+1,"cum_second_dose"] <- round((1 - vac_by_prop[i,"cum_second_dose"]/on_pop)*avg_vac) + vac_by_prop[i,"cum_second_dose"]
@@ -81,7 +81,7 @@ print(gg_cum
 vac_by_current <- tail(dd2,1)[rep(1,301),]
 rownames(vac_by_current) <- NULL
 
-for(i in 1:300){
+for(i in 1:100){
 vac_by_current[i+1,"date"] <- vac_by_current[i,"date"] + 1
 vac_by_current[i+1,"cum_first_dose"] <- round(avg_vac*(1-0.85)) + vac_by_current[i,"cum_first_dose"]
 vac_by_current[i+1,"cum_second_dose"] <- round(avg_vac*0.85) + vac_by_current[i,"cum_second_dose"]

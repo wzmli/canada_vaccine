@@ -22,6 +22,8 @@ vaccine_plot.Rout: vaccine_plot.R vaccine_clean.rds
 project.Rout: project.R vaccine_plot.rda
 	$(pipeR)
 
+project_plot.Rout: project_plot.R
+
 ######################################################################
 
 ### Makestuff

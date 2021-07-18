@@ -5,51 +5,51 @@ startGraphics()
 
 commandEnvironments()
 
+cutDays <- 7
 futureSteps <- 101
-second_dose_prop <- 0.5
-avg_vac <- 150e3
-dd2 <- dd %>% select(date,vaxPop,secondVaxPop)
+hesitancy = c(0.1, 0.2)
 
-vac_by_prop <- tail(dd2,1)[rep(1,futureSteps),]
+## Simple saturating model
 
+start <- (dd
+	%>% select(-province)
+	%>% tail(7)
+	%>% mutate(across(.fns=mean))
+	%>% tail(1)
+)
 
-tempdat <- (vac_by_prop
-	%>% mutate(leftover_unvax = on_pop - vaxPop
-		, leftover_partvax = on_pop - secondVaxPop
+print(start)
+
+vfun <- function(vpop, steps, start, tpop){
+	max = (tpop-vpop)*start/(tpop-vpop-start) 
+	v <- numeric(steps)
+	v[[1]] <- vpop
+	for(i in 2:steps){
+		pool <- tpop - vpop
+		vacc <- pool*max/(pool+max)
+		v[[i]] <- vpop <- vpop + vacc
+	}
+	return(v)
+}
+
+## The most naive saturating approach
+vacc_project <- tibble(NULL
+	, date = seq(start$date, length.out=futureSteps, by=1)
+	, vaxPop=vfun(
+		start$vaxPop, futureSteps, start$dailyJabs - start$dailySecond
+		, ((1-hesitancy[[1]])*on_eli_pop)
 	)
+	, secondVaxPop=vfun(
+		start$secondVaxPop, futureSteps, start$dailySecond
+		, ((1-hesitancy[[2]])*on_eli_pop)
+	)
+	, firstJabs = diff(c(NA, vaxPop))
+	, secondJabs = diff(c(NA, secondVaxPop))
+	, jabs = firstJabs + secondJabs
+	, on_eli_pop = on_eli_pop
 )
 
-print(tempdat)
-
-rownames(vac_by_prop) <- NULL
-
-for(i in 1:futureSteps){
-vac_by_prop[i+1,"date"] <- vac_by_prop[i,"date"] + 1
-vac_by_prop[i+1,"vaxPop"] <- round((1 - vac_by_prop[i,"vaxPop"]/on_pop)*avg_vac) + vac_by_prop[i,"vaxPop"]
-vac_by_prop[i+1,"secondVaxPop"] <- round((vac_by_prop[i,"vaxPop"]/on_pop)*avg_vac) + vac_by_prop[i,"secondVaxPop"]
-}
-
-print(gg_pop
-	+ geom_line(data=vac_by_prop, aes(date,y=vaxPop),color="black",lty="dashed")
-	+ geom_line(data=vac_by_prop, aes(date,y=secondVaxPop),color="blue",lty="dashed")
-	+ ggtitle("Vaccinate by proportion")
-)
-
-vac_by_current <- tail(dd2,1)[rep(1,futureSteps),]
-rownames(vac_by_current) <- NULL
-
-for(i in 1:futureSteps){
-vac_by_current[i+1,"date"] <- vac_by_current[i,"date"] + 1
-vac_by_current[i+1,"vaxPop"] <- round(avg_vac*(1-second_dose_prop)) + vac_by_current[i,"vaxPop"]
-vac_by_current[i+1,"secondVaxPop"] <- round(avg_vac*second_dose_prop) + vac_by_current[i,"secondVaxPop"]
-}
-
-
-print(gg_pop
-   + geom_line(data=vac_by_current, aes(date,y=vaxPop),color="black",lty="dashed")
-   + geom_line(data=vac_by_current, aes(date,y=secondVaxPop),color="blue",lty="dashed")
-   + ggtitle(paste0("Vaccinate by ",second_dose_prop,"% second dose"))
-	+ ylim(c(NA,15e6))
-)
-
+vaccM <- vacc_project %>% select(-date) 
+vaccM <- vaccM/1e3
+print(vaccM)
 

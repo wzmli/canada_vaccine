@@ -53,3 +53,5 @@ vaccM <- vacc_project %>% select(-date)
 vaccM <- vaccM/1e3
 print(vaccM)
 
+rdsSave(vacc_project)
+

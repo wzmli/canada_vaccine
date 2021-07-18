@@ -7,26 +7,28 @@ commandEnvironments()
 
 cutDays <- 7
 futureSteps <- 101
+satScale <- 10
 hesitancy = c(0.1, 0.2)
 
 ## Simple saturating model
 
 start <- (dd
 	%>% select(-province)
-	%>% tail(7)
+	%>% tail(cutDays)
 	%>% mutate(across(.fns=mean))
 	%>% tail(1)
 )
 
 print(start)
 
-vfun <- function(vpop, steps, start, tpop){
-	max = (tpop-vpop)*start/(tpop-vpop-start) 
+vfun <- function(vpop, steps, start, tpop, scale=1){
+	stopifnot(tpop > vpop + start*scale)
+	maxvacc = (tpop-vpop)*start/(tpop-vpop-start*scale) 
 	v <- numeric(steps)
 	v[[1]] <- vpop
 	for(i in 2:steps){
 		pool <- tpop - vpop
-		vacc <- pool*max/(pool+max)
+		vacc <- pool*maxvacc/(pool+maxvacc*scale)
 		v[[i]] <- vpop <- vpop + vacc
 	}
 	return(v)
@@ -38,10 +40,12 @@ vacc_project <- tibble(NULL
 	, vaxPop=vfun(
 		start$vaxPop, futureSteps, start$dailyJabs - start$dailySecond
 		, ((1-hesitancy[[1]])*on_eli_pop)
+		, satScale
 	)
 	, secondVaxPop=vfun(
 		start$secondVaxPop, futureSteps, start$dailySecond
 		, ((1-hesitancy[[2]])*on_eli_pop)
+		, satScale
 	)
 	, firstJabs = diff(c(NA, vaxPop))
 	, secondJabs = diff(c(NA, secondVaxPop))

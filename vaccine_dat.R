@@ -7,12 +7,12 @@ get_data <- function(province){
 	url <- paste0('https://api.covid19tracker.ca/reports/province/'
 					, province
 					, '?fill_dates=true'
-			)
+	)
 	upd <- fromJSON(url)
 	dat <- (upd$data
 			%>% mutate(province = province)
 			%>% select(province, date,total_vaccinations,total_vaccinated)
-		)
+	)
 	return(dat)
 }
 

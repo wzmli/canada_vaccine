@@ -18,3 +18,30 @@ gg_proj <- (gg_pop
 )
 
 print(gg_proj)
+
+spreadDat <- (cum_dat
+	%>% spread(key=population,value=count)
+)
+
+print(spreadDat)
+
+print(projectdat)
+
+outputdat <- (projectdat
+	%>% select(-c(firstJabs, secondJabs, jabs))
+	%>% bind_rows(spreadDat)
+	%>% arrange(province,date)
+	%>% rename(at_least_1_dose = vaxPop
+		, double_dose = secondVaxPop
+		, population = pop
+		, eligible_population = eli_pop 
+	)
+	%>% mutate(type = ifelse(date <= as.Date("2021-07-18"), "data", "projection")
+		, unvaccinated_population = population - at_least_1_dose
+		, partially_dose = at_least_1_dose - double_dose
+	)
+)
+
+
+write.csv(outputdat,"vaccine_projection.csv")
+

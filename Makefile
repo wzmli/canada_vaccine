@@ -16,7 +16,7 @@ vaccine_dat.Rout: vaccine_dat.R
 vaccine_clean.Rout: vaccine_clean.R vaccine_dat.rds
 	$(pipeR)
 
-vaccine_plot.Rout: vaccine_plot.R vaccine_clean.rds
+vaccine_plot.Rout: vaccine_plot.R vaccine_clean.rds pop.csv
 	$(pipeR)
 
 project.Rout: project.R vaccine_plot.rda

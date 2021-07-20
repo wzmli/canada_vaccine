@@ -30,5 +30,4 @@ dd <- (dd
 ## Looking at the second dose prop for the last couple of days and the average vaccine administered
 
 summary(dd)
-summary(dd %>% filter(province=="on"))
 rdsSave(dd)

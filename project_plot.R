@@ -7,9 +7,9 @@ commandEnvironments()
 
 projectdat <- rdsRead()
 
-print(projectdat)
+## print(projectdat)
 
-print(gg_pop
+gg_proj <- (gg_pop
 	+ geom_line(data=projectdat, aes(x=date,y=vaxPop), color="black", lty="dashed")
 	+ geom_line(data=projectdat, aes(x=date,y=secondVaxPop), color="blue", lty="dashed")
 	+ geom_vline(aes(xintercept=as.Date("2021-07-18")))
@@ -17,3 +17,4 @@ print(gg_pop
 	+ facet_wrap(~province, scale="free",ncol=3)
 )
 
+print(gg_proj)

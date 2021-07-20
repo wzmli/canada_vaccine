@@ -7,12 +7,14 @@ commandEnvironments()
 
 cutDays <- 7
 futureSteps <- 100
-satScale <- 20
+satScale <- 10 ## Look into this; should it be different for doses or provinces?
 hesitancy = c(0.1, 0.15)
+hesitancy[[2]] <- 1 - (1-hesitancy[[2]])/(1-hesitancy[[1]])
+print(hesitancy)
 
 ## Simple saturating model
 
-popdat <- read_csv("pop.csv")
+popdat <- csvRead()
 
 startdat <- (dd
 	%>% group_by(province)
@@ -26,12 +28,16 @@ startdat <- (dd
 )
 
 vfun <- function(vpop, steps, start, tpop, scale=1){
-	stopifnot(tpop > vpop + start*scale)
-	maxvacc = (tpop-vpop)*start/(tpop-vpop-start*scale) 
+	if(length(tpop)==1){
+		tpop = rep(tpop, steps)
+	}
+	stopifnot(length(tpop)==steps)
+	stopifnot(tpop[[1]] > vpop + start*scale)
+	maxvacc = (tpop[[1]]-vpop)*start/(tpop[[1]]-vpop-start*scale) 
 	v <- numeric(steps)
 	v[[1]] <- vpop
 	for(i in 2:steps){
-		pool <- tpop - vpop
+		pool <- tpop[[i]] - vpop
 		vacc <- pool*maxvacc/(pool+maxvacc*scale)
 		v[[i]] <- vpop <- vpop + vacc
 	}
@@ -40,42 +46,40 @@ vfun <- function(vpop, steps, start, tpop, scale=1){
 
 ## The most naive saturating approach
 
-
 provinces <- c("bc","ab","sk","mb","on","qc","nb","ns","pe","nl","nt","nu","yt")
-provinces <- provinces[1:12]
+## provinces <- provinces[1:12]
 
 vacproject <- function(pp){
 
-start <- startdat %>% filter(province == pp) 
+	start <- startdat %>% filter(province == pp) 
 
-vacc_project <- tibble(NULL
-	, date = seq(start$date, length.out=futureSteps, by=1)
-	, province = pp
-	, vaxPop=vfun(
-		start$vaxPop, futureSteps, start$dailyJabs - start$dailySecond
-		, ((1-hesitancy[[1]])*start$eli_pop)
-		, satScale
+	vacc_project <- tibble(NULL
+		, date = seq(start$date, length.out=futureSteps, by=1)
+		, province = pp
+		, vaxPop=vfun(
+			start$vaxPop, futureSteps, start$dailyJabs - start$dailySecond
+			, ((1-hesitancy[[1]])*start$eli_pop)
+			, satScale
+		)
+		, secondVaxPop=vfun(
+			start$secondVaxPop, futureSteps, start$dailySecond
+			, ((1-hesitancy[[2]])*vaxPop)
+			, satScale
+		)
+		, firstJabs = diff(c(NA, vaxPop))
+		, secondJabs = diff(c(NA, secondVaxPop))
+		, jabs = firstJabs + secondJabs
+		, eli_pop = start$eli_pop
+		, pop = start$pop
+
 	)
-	, secondVaxPop=vfun(
-		start$secondVaxPop, futureSteps, start$dailySecond
-		, ((1-hesitancy[[2]])*start$eli_pop)
-		, satScale
-	)
-	, firstJabs = diff(c(NA, vaxPop))
-	, secondJabs = diff(c(NA, secondVaxPop))
-	, jabs = firstJabs + secondJabs
-	, eli_pop = start$eli_pop
-	, pop = start$pop
 
-)
-
-return(vacc_project)
+	return(vacc_project)
 
 }
 
 projectList <- lapply(provinces,vacproject)
-projectdat <- (bind_rows(projectList)
-)
+projectdat <- (bind_rows(projectList))
 
 rdsSave(projectdat)
 

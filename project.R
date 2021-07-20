@@ -6,7 +6,7 @@ startGraphics()
 commandEnvironments()
 
 cutDays <- 7
-futureSteps <- 150
+futureSteps <- 100
 satScale <- 20
 hesitancy = c(0.1, 0.15)
 
@@ -41,8 +41,8 @@ vfun <- function(vpop, steps, start, tpop, scale=1){
 ## The most naive saturating approach
 
 
-provinces <- c("bc","ab","sk","mb","on","qc","nb","ns","pe","nl","yt","nt","nu")
-provinces <- provinces[1:10]
+provinces <- c("bc","ab","sk","mb","on","qc","nb","ns","pe","nl","nt","nu","yt")
+provinces <- provinces[1:12]
 
 vacproject <- function(pp){
 

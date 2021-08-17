@@ -42,4 +42,19 @@ gg_pop <- (ggplot(cum_dat,aes(date,y=count,color=population))
 
 print(gg_pop)
 
+
+gg_pop2 <- (ggplot(cum_dat,aes(date,y=count/pop,color=population))
+   + geom_line()
+   + facet_wrap(~province, scale="free")
+   + scale_color_manual(values=c("blue","black"))
+   + ylab("Cumulative count")
+   + geom_hline(aes(yintercept = pop/pop))
+   + geom_hline(aes(yintercept = eli_pop/pop),color="red")
+   + theme(legend.position="bottom")
+   + ggtitle("Black = pop; red = eligible pop")
+)
+
+print(gg_pop2)
+
+
 saveEnvironment()

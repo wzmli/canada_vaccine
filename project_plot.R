@@ -12,12 +12,21 @@ projectdat <- rdsRead()
 gg_proj <- (gg_pop
 	+ geom_line(data=projectdat, aes(x=date,y=vaxPop), color="black", lty="dashed")
 	+ geom_line(data=projectdat, aes(x=date,y=secondVaxPop), color="blue", lty="dashed")
-	+ geom_vline(aes(xintercept=as.Date("2021-07-18")))
+	+ geom_vline(aes(xintercept=as.Date("2021-08-16")))
 	+ scale_x_date(date_labels="%b", date_breaks="1 month")
 	+ facet_wrap(~province, scale="free",ncol=3)
 )
 
 print(gg_proj)
+
+print(gg_proj2 <- (gg_pop2
+   + geom_line(data=projectdat, aes(x=date,y=vaxPop/pop), color="black", lty="dashed")
+   + geom_line(data=projectdat, aes(x=date,y=secondVaxPop/pop), color="blue", lty="dashed")
+   + geom_vline(aes(xintercept=as.Date("2021-08-16")))
+   + scale_x_date(date_labels="%b", date_breaks="1 month")
+   + facet_wrap(~province, scale="free",ncol=3)
+
+))
 
 spreadDat <- (cum_dat
 	%>% spread(key=population,value=count)
@@ -28,7 +37,7 @@ print(spreadDat)
 print(projectdat)
 
 outputdat <- (projectdat
-	%>% select(-c(firstJabs, secondJabs, jabs))
+#	%>% select(-c(firstJabs, secondJabs, jabs))
 	%>% bind_rows(spreadDat)
 	%>% arrange(province,date)
 	%>% rename(at_least_1_dose = vaxPop
@@ -36,12 +45,12 @@ outputdat <- (projectdat
 		, population = pop
 		, eligible_population = eli_pop 
 	)
-	%>% mutate(type = ifelse(date <= as.Date("2021-07-18"), "data", "projection")
+	%>% mutate(type = ifelse(date <= as.Date("2021-08-16"), "data", "projection")
 		, unvaccinated_population = population - at_least_1_dose
 		, partially_dose = at_least_1_dose - double_dose
 	)
 )
 
 
-write.csv(outputdat,"vaccine_projection.csv")
-
+#write.csv(outputdat,"vaccine_projection.csv")
+write.csv(projectdat,"vaccine_projection_only.csv")

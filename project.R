@@ -7,7 +7,7 @@ commandEnvironments()
 
 cutDays <- 7
 futureSteps <- 100
-satScale <- 10 ## Look into this; should it be different for doses or provinces?
+satScale <- 3 ## Look into this; should it be different for doses or provinces?
 hesitancy = c(0.1, 0.15)
 hesitancy[[2]] <- 1 - (1-hesitancy[[2]])/(1-hesitancy[[1]])
 print(hesitancy)
@@ -47,7 +47,7 @@ vfun <- function(vpop, steps, start, tpop, scale=1){
 ## The most naive saturating approach
 
 provinces <- c("bc","ab","sk","mb","on","qc","nb","ns","pe","nl","nt","nu","yt")
-## provinces <- provinces[1:12]
+provinces <- provinces[1:10]
 
 vacproject <- function(pp){
 
@@ -80,6 +80,7 @@ vacproject <- function(pp){
 
 projectList <- lapply(provinces,vacproject)
 projectdat <- (bind_rows(projectList))
+
 
 rdsSave(projectdat)
 

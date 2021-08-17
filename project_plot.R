@@ -50,7 +50,7 @@ outputdat <- (projectdat
 		, partially_dose = at_least_1_dose - double_dose
 	)
 )
+print(outputdat)
 
-
-#write.csv(outputdat,"vaccine_projection.csv")
+write.csv(outputdat,"vaccine_projection.csv")
 write.csv(projectdat,"vaccine_projection_only.csv")

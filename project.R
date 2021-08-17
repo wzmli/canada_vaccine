@@ -27,6 +27,22 @@ startdat <- (dd
 	%>% left_join(popdat)
 )
 
+canstart <- (startdat
+	%>% group_by(date)
+	%>% summarise(secondVaxPop = sum(secondVaxPop,na.rm=TRUE)
+		, vaxPop = sum(vaxPop, na.rm=TRUE)
+		, dailyJabs = sum(dailyJabs,na.rm=TRUE)
+		, dailySecond = sum(dailySecond,na.rm=TRUE)
+		, dailySecondProp = mean(dailySecondProp,na.rm=TRUE)
+		, pop = sum(pop)
+		, eli_pop = sum(eli_pop)
+		, province = "Canada"
+	)
+)
+
+startdat <- rbind(startdat,canstart)
+
+
 vfun <- function(vpop, steps, start, tpop, scale=1){
 	if(length(tpop)==1){
 		tpop = rep(tpop, steps)
@@ -46,8 +62,10 @@ vfun <- function(vpop, steps, start, tpop, scale=1){
 
 ## The most naive saturating approach
 
-provinces <- c("bc","ab","sk","mb","on","qc","nb","ns","pe","nl","nt","nu","yt")
-provinces <- provinces[1:12]
+provinces <- c("Canada","bc","ab","sk","mb","on","qc","nb","ns","pe","nl","nt","nu","yt")
+provinces <- provinces[1:13]
+
+
 
 vacproject <- function(pp){
 

@@ -25,6 +25,22 @@ cum_dat <- (dd
 	%>% left_join(.,popdat)
 )
 
+canada_cum <- (cum_dat
+	%>% group_by(date, population)
+   %>% summarise(count = sum(count,na.rm=TRUE)     
+		, pop = sum(pop,na.rm=TRUE)
+		, eli_pop = sum(eli_pop,na.rm=TRUE)
+		, province = "Canada")
+)
+
+print(cum_dat)
+print(canada_cum)
+
+cum_dat <- rbind(cum_dat, canada_cum)
+
+
+
+
 ## Cumulative first and second dose with population and eligible population
 
 print(cum_dat)

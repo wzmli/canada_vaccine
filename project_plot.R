@@ -42,6 +42,7 @@ print(gg_proj2 <- (gg_pop2
    + scale_x_date(date_labels="%b", date_breaks="1 month")
    + facet_wrap(~province2, scale="free",ncol=2)
 	+ ggtitle("")
+	+ ylab("Proportion")
 ))
 
 ggsave("vac_proj_prop.png",width=10,height=8)

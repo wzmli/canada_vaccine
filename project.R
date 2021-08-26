@@ -5,9 +5,9 @@ startGraphics()
 
 commandEnvironments()
 
-cutDays <- 5
+cutDays <- 7
 futureSteps <- 100
-satScale <- 1 ## Look into this; should it be different for doses or provinces?
+satScale <- 5 ## Look into this; should it be different for doses or provinces?
 hesitancy = c(0.1, 0.15)
 hesitancy[[2]] <- 1 - (1-hesitancy[[2]])/(1-hesitancy[[1]])
 print(hesitancy)
@@ -27,6 +27,12 @@ startdat <- (dd
 	%>% left_join(popdat)
 )
 
+
+
+print(startdat)
+
+
+
 canstart <- (startdat
 	%>% group_by(date)
 	%>% summarise(secondVaxPop = sum(secondVaxPop,na.rm=TRUE)
@@ -37,6 +43,7 @@ canstart <- (startdat
 		, pop = sum(pop)
 		, eli_pop = sum(eli_pop)
 		, province = "Canada"
+		, province2 = "Canada"
 	)
 )
 
@@ -63,7 +70,7 @@ vfun <- function(vpop, steps, start, tpop, scale=1){
 ## The most naive saturating approach
 
 provinces <- c("Canada","bc","ab","sk","mb","on","qc","nb","ns","pe","nl","nt","nu","yt")
-provinces <- provinces[1:13]
+provinces <- provinces[2:7]
 
 
 
@@ -98,6 +105,9 @@ vacproject <- function(pp){
 
 projectList <- lapply(provinces,vacproject)
 projectdat <- (bind_rows(projectList))
+
+
+print(projectdat)
 
 
 rdsSave(projectdat)

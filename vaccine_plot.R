@@ -37,7 +37,7 @@ print(cum_dat)
 print(canada_cum)
 
 cum_dat <- rbind(cum_dat, canada_cum)
-
+cum_dat <- filter(cum_dat, province %in% c("bc","ab","sk","mb","on","qc"))
 
 
 
@@ -47,7 +47,7 @@ print(cum_dat)
 
 gg_pop <- (ggplot(cum_dat,aes(date,y=count,color=population))
 	+ geom_line()
-	+ facet_wrap(~province, scale="free")
+	+ facet_wrap(~province2, scale="free")
 	+ scale_color_manual(values=c("blue","black"))
 	+ ylab("Cumulative count")
 	+ geom_hline(aes(yintercept = pop))
@@ -61,7 +61,7 @@ print(gg_pop)
 
 gg_pop2 <- (ggplot(cum_dat,aes(date,y=count/pop,color=population))
    + geom_line()
-   + facet_wrap(~province, scale="free")
+   + facet_wrap(~province2, scale="free")
    + scale_color_manual(values=c("blue","black"))
    + ylab("Cumulative count")
    + geom_hline(aes(yintercept = pop/pop))

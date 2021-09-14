@@ -7,7 +7,7 @@ commandEnvironments()
 
 cutDays <- 7
 futureSteps <- 100
-satScale <- 5 ## Look into this; should it be different for doses or provinces?
+satScale <- 3 ## Look into this; should it be different for doses or provinces?
 hesitancy = c(0.1, 0.15)
 hesitancy[[2]] <- 1 - (1-hesitancy[[2]])/(1-hesitancy[[1]])
 print(hesitancy)

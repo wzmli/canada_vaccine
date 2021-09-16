@@ -25,7 +25,7 @@ projectdat <- (projectdat
 gg_proj <- (gg_pop
 	+ geom_line(data=projectdat, aes(x=date,y=vaxPop), color="black", lty="dashed")
 	+ geom_line(data=projectdat, aes(x=date,y=secondVaxPop), color="blue", lty="dashed")
-	+ geom_vline(aes(xintercept=as.Date("2021-08-25")))
+	+ geom_vline(aes(xintercept=as.Date("2021-09-14")))
 	+ scale_x_date(date_labels="%b", date_breaks="1 month")
 	+ facet_wrap(~province2, scale="free",ncol=2)
 	+ ggtitle("")
@@ -38,7 +38,7 @@ ggsave("vac_proj.png",width=10,height=8)
 print(gg_proj2 <- (gg_pop2
    + geom_line(data=projectdat, aes(x=date,y=vaxPop/pop), color="black", lty="dashed")
    + geom_line(data=projectdat, aes(x=date,y=secondVaxPop/pop), color="blue", lty="dashed")
-   + geom_vline(aes(xintercept=as.Date("2021-08-25")))
+   + geom_vline(aes(xintercept=as.Date("2021-09-14")))
    + scale_x_date(date_labels="%b", date_breaks="1 month")
    + facet_wrap(~province2, scale="free",ncol=2)
 	+ ggtitle("")
@@ -64,7 +64,7 @@ outputdat <- (projectdat
 		, population = pop
 		, eligible_population = eli_pop 
 	)
-	%>% mutate(type = ifelse(date <= as.Date("2021-08-16"), "data", "projection")
+	%>% mutate(type = ifelse(date <= as.Date("2021-09-14"), "data", "projection")
 		, unvaccinated_population = population - at_least_1_dose
 		, partially_dose = at_least_1_dose - double_dose
 	)

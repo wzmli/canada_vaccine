@@ -10,18 +10,22 @@ vim_session:
 
 Sources += $(wildcard *.R)
 
+## Get the latest data (needs to be refreshed sometimes)
 vaccine_dat.Rout: vaccine_dat.R
 	$(pipeR)
 
+## Clean
 vaccine_clean.Rout: vaccine_clean.R vaccine_dat.rds
 	$(pipeR)
 
+## Plot raw, cleaned data. Also lazily do a calc in the wrong place
 vaccine_plot.Rout: vaccine_plot.R vaccine_clean.rds pop.csv
 	$(pipeR)
 
 ## Provincial populations
 Sources += pop.csv
 
+## Vaccine projections with saturation
 project.Rout: project.R pop.csv vaccine_plot.rda
 	$(pipeR)
 

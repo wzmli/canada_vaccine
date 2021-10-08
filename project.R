@@ -3,12 +3,14 @@ library(tidyverse);theme_set(theme_bw())
 library(directlabels)
 startGraphics()
 
-commandEnvironments()
+loadEnvironments()
 
 cutDays <- 7
 futureSteps <- 100
 satScale <- 1 ## Look into this; should it be different for doses or provinces?
-hesitancy = c(0.05, 0.1)
+
+## Specify hesitancy as cumulative and then convert to per-step
+hesitancy = c(0.05, 0.07)
 hesitancy[[2]] <- 1 - (1-hesitancy[[2]])/(1-hesitancy[[1]])
 print(hesitancy)
 
@@ -49,14 +51,23 @@ canstart <- (startdat
 
 startdat <- rbind(startdat,canstart)
 
-
+## Return vaccine projections
+## vpop, how many people have been vaccinated
+## start is current rate of vaccination
+## tpop is vaccinatable pool
+## Number vaccinated is a softmax-like function of maxvacc and pool
+## maxvacc chosen so that we start at start
+## scale adjusts how quickly we can use up the last bunch of people;
+## scale = 1 should be very fast
 vfun <- function(vpop, steps, start, tpop, scale=1){
+	print(c(vpop=vpop, start=start, tpop=tpop))
 	if(length(tpop)==1){
 		tpop = rep(tpop, steps)
 	}
 	stopifnot(length(tpop)==steps)
-	stopifnot(tpop[[1]] > vpop + start*scale)
-	maxvacc = (tpop[[1]]-vpop)*start/(tpop[[1]]-vpop-start*scale) 
+	pool1 = tpop[[1]]-vpop
+	stopifnot(pool1 > start*scale)
+	maxvacc = pool1*start/(pool1-start*scale) 
 	v <- numeric(steps)
 	v[[1]] <- vpop
 	for(i in 2:steps){

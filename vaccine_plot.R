@@ -36,10 +36,13 @@ canada_cum <- (cum_dat
 print(cum_dat)
 print(canada_cum)
 
-cum_dat <- rbind(cum_dat, canada_cum)
-cum_dat <- filter(cum_dat, province %in% c("bc","ab","sk","mb","on","qc"))
+cum_dat <- (rbind(cum_dat, canada_cum)
+	%>% mutate(province2 = ifelse(province == "Canada","Canada",province2))
+	%>% mutate(province2 = factor(province2))
+)
+# cum_dat <- filter(cum_dat, province %in% c("bc","ab","sk","mb","on","qc"))
 
-
+print(tail(cum_dat))
 
 ## Cumulative first and second dose with population and eligible population
 

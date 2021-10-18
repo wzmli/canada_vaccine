@@ -8,8 +8,10 @@ commandEnvironments()
 projectdat <- rdsRead()
 
 
+print(projectdat$province %>% unique())
+
 projectdat <- (projectdat
-	%>% filter(province %in% c("bc","ab","sk","mb","on","qc"))
+#	%>% filter(province %in% c("bc","ab","sk","mb","on","qc"))
 	%>% mutate( province2 = province
 		, province2 = ifelse(province2 == "bc", "BC", province2)
 		, province2 = ifelse(province2 == "ab", "AB", province2)
@@ -17,17 +19,23 @@ projectdat <- (projectdat
 		, province2 = ifelse(province2 == "mb", "MB", province2)
 		, province2 = ifelse(province2 == "on", "ON", province2)
 		, province2 = ifelse(province2 == "qc", "QC", province2)
-		, province2 = factor(province2,level=c("BC","AB","SK","MB","ON","QC"))
-		)
-
-)
+		, province2 = ifelse(province2 == "nb", "NB", province2)
+		, province2 = ifelse(province2 == "ns", "NS", province2)
+		, province2 = ifelse(province2 == "pe", "PE", province2)
+		, province2 = ifelse(province2 == "nl", "NL", province2)
+		, province2 = ifelse(province2 == "yt", "YT", province2)
+		, province2 = ifelse(province2 == "nt", "NT", province2)
+		, province2 = ifelse(province2 == "nu", "NU", province2)
+		, province2 = ifelse(province2 == "Canada", "Canada",province2)
+		, province2 = factor(province2,level=c("BC","AB","SK","MB","ON","QC","NB","NS","PE","NL","YT","NT","NU","Canada"))
+		))
 
 gg_proj <- (gg_pop
 	+ geom_line(data=projectdat, aes(x=date,y=vaxPop), color="black", lty="dashed")
 	+ geom_line(data=projectdat, aes(x=date,y=secondVaxPop), color="blue", lty="dashed")
-	+ geom_vline(aes(xintercept=as.Date("2021-09-14")))
+	+ geom_vline(aes(xintercept=as.Date("2021-10-17")))
 	+ scale_x_date(date_labels="%b", date_breaks="1 month")
-	+ facet_wrap(~province2, scale="free",ncol=2)
+	+ facet_wrap(~province2, scale="free",ncol=3)
 	+ ggtitle("")
 )
 
@@ -38,9 +46,9 @@ ggsave("vac_proj.png",width=10,height=8)
 print(gg_proj2 <- (gg_pop2
    + geom_line(data=projectdat, aes(x=date,y=vaxPop/pop), color="black", lty="dashed")
    + geom_line(data=projectdat, aes(x=date,y=secondVaxPop/pop), color="blue", lty="dashed")
-   + geom_vline(aes(xintercept=as.Date("2021-09-14")))
+   + geom_vline(aes(xintercept=as.Date("2021-10-17")))
    + scale_x_date(date_labels="%b", date_breaks="1 month")
-   + facet_wrap(~province2, scale="free",ncol=2)
+   + facet_wrap(~province2, scale="free",ncol=3)
 	+ ggtitle("")
 	+ ylab("Proportion")
 ))
@@ -64,7 +72,7 @@ outputdat <- (projectdat
 		, population = pop
 		, eligible_population = eli_pop 
 	)
-	%>% mutate(type = ifelse(date <= as.Date("2021-09-14"), "data", "projection")
+	%>% mutate(type = ifelse(date <= as.Date("2021-10-17"), "data", "projection")
 		, unvaccinated_population = population - at_least_1_dose
 		, partially_dose = at_least_1_dose - double_dose
 	)

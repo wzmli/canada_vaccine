@@ -10,7 +10,7 @@ futureSteps <- 100
 satScale <- 1 ## Look into this; should it be different for doses or provinces?
 
 ## Specify hesitancy as cumulative and then convert to per-step
-hesitancy = c(0.05, 0.07)
+hesitancy = c(0.02, 0.05)
 hesitancy[[2]] <- 1 - (1-hesitancy[[2]])/(1-hesitancy[[1]])
 print(hesitancy)
 
@@ -81,9 +81,8 @@ vfun <- function(vpop, steps, start, tpop, scale=1){
 ## The most naive saturating approach
 
 provinces <- c("Canada","bc","ab","sk","mb","on","qc","nb","ns","pe","nl","nt","nu","yt")
-# provinces <- provinces[1:7]
-provinces <- provinces[5]
-
+# provinces <- provinces[1:10]
+# provinces <- provinces[12]
 
 vacproject <- function(pp){
 
